@@ -1,454 +1,501 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-Powered ATS Resume Checker</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%),
-                url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=80') center/cover fixed;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        h1 {
-            color: #ffffff;
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: 36px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #cbd5e1;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #e2e8f0;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        input[type="password"],
-        input[type="text"],
-        input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #475569;
-            border-radius: 8px;
-            background: rgba(51, 65, 85, 0.5);
-            color: #e2e8f0;
-        }
-
-        input[type="file"] {
-            border-style: dashed;
-            cursor: pointer;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #475569;
-            border-radius: 8px;
-            min-height: 150px;
-            font-family: Arial, sans-serif;
-            resize: vertical;
-            background: rgba(51, 65, 85, 0.5);
-            color: #e2e8f0;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        #result {
-            margin-top: 30px;
-            display: none;
-        }
-
-        .score-card {
-            padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            color: white;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .score {
-            font-size: 64px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .section {
-            background: rgba(51, 65, 85, 0.5);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .section h3 {
-            color: #ffffff;
-            margin-bottom: 15px;
-        }
-
-        .ai-content {
-            color: #cbd5e1;
-            line-height: 1.8;
-            white-space: pre-wrap;
-        }
-
-        .change-item {
-            background: rgba(71, 85, 105, 0.5);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-        }
-
-        .change-title {
-            font-weight: bold;
-            color: #93c5fd;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-
-        .change-desc {
-            color: #cbd5e1;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        .keyword-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            margin: 3px;
-            background: #ffc107;
-            color: #000;
-            border-radius: 15px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-box {
-            background: rgba(71, 85, 105, 0.5);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #93c5fd;
-        }
-
-        .stat-label {
-            color: #cbd5e1;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-
-        .api-note {
-            background: rgba(59, 130, 246, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-            color: #93c5fd;
-            font-size: 13px;
-            margin-top: 5px;
-        }
-    </style>
+    <title>ATS Checker - AI-Powered Resume Optimization</title>
+    <meta name="description"
+        content="Scan your resume against any job description and get an instant ATS score, missing keywords, and AI-powered suggestions with Google Gemini.">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Style System -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="container">
-        <h1>🤖 AI-Powered ATS Checker</h1>
-        <p class="subtitle">Get intelligent resume analysis powered by Gemini Pro</p>
-        <form id="atsForm">
-            <div class="form-group">
-                <label>📄 Upload Resume (PDF)</label>
-                <input type="file" id="resumeFile" accept=".pdf" required>
-            </div>
-            <div class="form-group">
-                <label>📋 Job Description</label>
-                <textarea id="jobDescription" placeholder="Paste the job description here..." required></textarea>
-            </div>
-            <button type="submit">Analyze with AI</button>
-        </form>
 
-        <div id="result">
-            <div class="score-card">
-                <div style="font-size: 18px; opacity: 0.9;">Your ATS Score</div>
-                <div class="score" id="score"></div>
-                <div id="scoreMessage"></div>
-            </div>
+    <!-- Background Ambient Glow & Dot Grid Overlay -->
+    <div class="bg-decorations">
+        <div class="bg-dot-pattern"></div>
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
 
-            <div class="stats">
-                <div class="stat-box">
-                    <div class="stat-number" id="totalKeywords">0</div>
-                    <div class="stat-label">Required Keywords</div>
+    <!-- ==========================================================================
+       HEADER & NAVIGATION
+       ========================================================================== -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-number" id="matchedKeywords">0</div>
-                    <div class="stat-label">You Have</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-number" id="missingKeywords">0</div>
-                    <div class="stat-label">Missing</div>
-                </div>
-            </div>
+                <span>ATS Checker</span>
+            </a>
 
-            <div class="section">
-                <h3>🤖 AI-Powered Analysis</h3>
-                <div id="aiSuggestions" class="ai-content"></div>
-            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#" class="active">Home</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </nav>
 
-            <div class="section">
-                <h3>💡 Top Missing Keywords</h3>
-                <div id="suggestedKeywords"></div>
+            <div class="header-actions">
+                <button class="btn btn-icon" id="themeToggleBtn" aria-label="Toggle Theme">☀️</button>
+                <a href="#analyze" class="btn btn-primary">✦ Analyze Resume</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open Mobile Menu">☰</button>
             </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay">
+        <div class="mobile-nav-menu">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                </div>
+                <span>ATS Checker</span>
+            </a>
+            <ul class="mobile-nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+            <a href="#analyze" class="btn btn-primary" style="width: 100%;">✦ Analyze Resume</a>
         </div>
     </div>
 
+    <!-- ==========================================================================
+       HERO SECTION
+       ========================================================================== -->
+    <section class="hero-section">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <div class="badge badge-gradient">
+                    <span>✨ Next-Gen Resume Optimization</span>
+                </div>
+                <h1 class="hero-title">
+                    AI-Powered <span class="gradient-text">ATS Resume</span> Checker
+                </h1>
+                <p class="hero-description">
+                    Scan your resume against any job description and get an ATS score, missing keywords, and AI-powered suggestions to land more interviews.
+                </p>
+
+                <!-- Feature Highlights Grid -->
+                <div class="hero-highlights">
+                    <div class="highlight-card">
+                        <div class="highlight-icon">📊</div>
+                        <div class="highlight-text">
+                            <h4>Smart ATS Scoring</h4>
+                            <p>0–100 Match Score</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-card">
+                        <div class="highlight-icon">🎯</div>
+                        <div class="highlight-text">
+                            <h4>Keyword Analysis</h4>
+                            <p>Find Missing Keywords</p>
+                        </div>
+                    </div>
+
+                    <div class="highlight-card">
+                        <div class="highlight-icon">🤖</div>
+                        <div class="highlight-text">
+                            <h4>AI Suggestions</h4>
+                            <p>Improve Your Resume</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Visual Preview Dashboard Card -->
+            <div class="hero-preview-card">
+                <div class="preview-header">
+                    <span class="preview-title">ATS Score</span>
+                    <span class="preview-sparkle">✦</span>
+                </div>
+
+                <div class="preview-score-row">
+                    <div class="gauge-container">
+                        <svg class="gauge-svg" viewBox="0 0 100 100">
+                            <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                            <circle class="gauge-fill" cx="50" cy="50" r="40"></circle>
+                        </svg>
+                        <div class="gauge-text">85%</div>
+                    </div>
+                    <div class="preview-score-info">
+                        <h3>Excellent Match</h3>
+                        <p>Great! Your resume is well optimized for this role.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="preview-section-title">Top Matched Skills</div>
+                    <div class="preview-tags-group">
+                        <span class="tag-matched">React.js</span>
+                        <span class="tag-matched">JavaScript</span>
+                        <span class="tag-matched">Node.js</span>
+                        <span class="tag-matched">TypeScript</span>
+                        <span class="tag-matched">SQL</span>
+                        <span class="tag-matched">Git</span>
+                        <span class="tag-matched">REST API</span>
+                        <span class="tag-matched">MongoDB</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="preview-section-title">Missing Keywords</div>
+                    <div class="preview-tags-group">
+                        <span class="tag-missing">AWS</span>
+                        <span class="tag-missing">Docker</span>
+                        <span class="tag-missing">Kubernetes</span>
+                        <span class="tag-missing">CI/CD</span>
+                        <span class="tag-missing">GraphQL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       ANALYSIS SECTION (CORE APP INTERFACE)
+       ========================================================================== -->
+    <section class="analysis-section" id="analyze">
+        <div class="container">
+            <div class="glass-card analysis-card">
+                <div class="analysis-header">
+                    <div class="analysis-header-icon">📄</div>
+                    <div class="analysis-title-group">
+                        <h2>Analyze Your Resume</h2>
+                        <p>Upload your resume and paste the job description to get started.</p>
+                    </div>
+                </div>
+
+                <div class="error-banner" id="errorBanner"></div>
+
+                <form id="atsForm">
+                    <div class="form-grid">
+                        <!-- Left Column: Upload Resume (PDF) -->
+                        <div class="form-column">
+                            <label class="form-label" for="resumeFile">
+                                <span>📄 1. Upload Resume (PDF)</span>
+                            </label>
+                            <div class="file-upload-area" id="fileDropArea">
+                                <input type="file" id="resumeFile" accept=".pdf" required>
+                                <div class="upload-icon-wrapper">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                                    </svg>
+                                </div>
+                                <div class="upload-title">Drag & drop your PDF here</div>
+                                <div class="upload-subtext">or click to browse</div>
+                                <span class="btn-upload-trigger">Choose File</span>
+                                <div class="upload-limit">Maximum file size: 10MB</div>
+                            </div>
+
+                            <!-- Selected File Info Box -->
+                            <div class="selected-file-info" id="selectedFileInfo">
+                                <div class="selected-file-details">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                                        <polyline points="10 9 9 9 8 9"></polyline>
+                                    </svg>
+                                    <div>
+                                        <div class="file-name-text" id="fileNameText">resume.pdf</div>
+                                        <div class="file-size-text" id="fileSizeText">250 KB</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-remove-file" id="removeFileBtn" title="Remove file">✕</button>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Job Description -->
+                        <div class="form-column">
+                            <label class="form-label" for="jobDescription">
+                                <span>📋 2. Job Description</span>
+                            </label>
+                            <div class="textarea-wrapper">
+                                <textarea id="jobDescription" placeholder="Paste the target job description here..." required></textarea>
+                                <div class="textarea-footer">
+                                    <span id="charCount">0 characters</span>
+                                    <button type="button" class="btn-clear-text" id="clearTextBtn">Clear Text</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Key Override Accordion -->
+                    <details class="api-key-accordion">
+                        <summary>🔑 Have a different Gemini API key? (Optional)</summary>
+                        <div class="api-key-content">
+                            <input type="password" id="apiKeyOverride" placeholder="Paste a custom Gemini API key here">
+                            <span style="font-size: 11px; color: var(--text-muted);">
+                                Free keys are available at <a href="https://aistudio.google.com/apikey" target="_blank" style="color: var(--text-accent);">aistudio.google.com/apikey</a>
+                            </span>
+                        </div>
+                    </details>
+
+                    <!-- Analyze Submit Button -->
+                    <button type="submit" class="btn-analyze-submit" id="submitBtn">
+                        <div class="spinner" id="submitBtnSpinner"></div>
+                        <span id="submitBtnText">✦ Analyze with AI</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ==========================================================================
+               RESULTS DASHBOARD
+               ========================================================================== -->
+            <div id="result">
+                <div class="results-grid">
+                    <!-- Main Score Gauge Card -->
+                    <div class="score-dashboard-card">
+                        <div class="card-subtitle">🎯 ATS Compatibility Score</div>
+                        
+                        <div class="score-circle-wrapper">
+                            <svg class="score-svg" viewBox="0 0 160 160">
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#38bdf8" />
+                                        <stop offset="50%" stop-color="#8b5cf6" />
+                                        <stop offset="100%" stop-color="#22c55e" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="score-bg-circle" cx="80" cy="80" r="70"></circle>
+                                <circle class="score-progress-circle" id="scoreProgressCircle" cx="80" cy="80" r="70"></circle>
+                            </svg>
+                            <div class="score-center-text">
+                                <span class="score-number" id="scoreNumber">0</span>
+                                <span class="score-percent">%</span>
+                            </div>
+                        </div>
+
+                        <div class="score-match-badge" id="scoreMatchBadge">Calculating...</div>
+
+                        <!-- Stats Metrics -->
+                        <div class="stats-container">
+                            <div class="stat-box">
+                                <div class="stat-value" id="totalKeywordsVal">0</div>
+                                <div class="stat-label-text">Required</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="matchedKeywordsVal">0</div>
+                                <div class="stat-label-text">Matched</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="missingKeywordsVal">0</div>
+                                <div class="stat-label-text">Missing</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keywords Breakdown Card -->
+                    <div class="keywords-dashboard-card">
+                        <div>
+                            <div class="card-subtitle">✅ Matched Keywords</div>
+                            <div class="keyword-badges-wrap" id="matchedKeywordsBadges" style="margin-top: 10px;"></div>
+                        </div>
+
+                        <div style="margin-top: 14px;">
+                            <div class="card-subtitle">⚠️ Top Missing Keywords</div>
+                            <div class="keyword-badges-wrap" id="suggestedKeywordsBadges" style="margin-top: 10px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Detailed Analysis Recommendations -->
+                <div class="ai-results-card">
+                    <div class="card-subtitle" style="font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+                        <span>🤖 Gemini AI Detailed Recommendations</span>
+                        <button type="button" class="btn btn-secondary" id="exportReportBtn" style="padding: 6px 16px; font-size: 13px;">📥 Export PDF Report</button>
+                    </div>
+                    <div class="ai-output-formatted" id="aiSuggestionsContent">
+                        Analyzing resume context with Gemini AI...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       TRUST & BENEFITS SECTION
+       ========================================================================== -->
+    <section class="benefits-section" id="features">
+        <div class="container">
+            <div class="section-title-wrap">
+                <h2>Why Job Seekers Trust ATS Checker</h2>
+                <p>Designed to give you an accurate, instantaneous edge in your job application workflow.</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔒</div>
+                    <h3>100% Private</h3>
+                    <p>Your resume is extracted and processed securely right inside your browser session.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">⚡</div>
+                    <h3>Instant Results</h3>
+                    <p>Receive immediate keyword match breakdown and score analysis in seconds.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🧠</div>
+                    <h3>AI-Powered</h3>
+                    <p>Powered by Google Gemini models for deep contextual resume recommendations.</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>ATS Optimized</h3>
+                    <p>Identify missing tech stacks and high-impact terms before submitting your application.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       HOW IT WORKS SECTION
+       ========================================================================== -->
+    <section class="how-it-works-section" id="how-it-works">
+        <div class="container">
+            <div class="section-title-wrap">
+                <h2>How It Works</h2>
+                <p>Optimize your resume for any role in three effortless steps.</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step-card">
+                    <span class="step-number">STEP 01</span>
+                    <h3>Upload PDF Resume</h3>
+                    <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Select or drop your text-based PDF resume into our secure client-side extractor.</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">STEP 02</span>
+                    <h3>Paste Job Description</h3>
+                    <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Copy and paste the full job posting details to compare required keywords.</p>
+                </div>
+
+                <div class="step-card">
+                    <span class="step-number">STEP 03</span>
+                    <h3>Get AI Analysis</h3>
+                    <p style="color: var(--text-secondary); margin-top: 8px; font-size: 14px;">Review your ATS match score, missing skills list, and personalized Gemini AI suggestions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       FAQ SECTION
+       ========================================================================== -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <div class="section-title-wrap">
+                <h2>Frequently Asked Questions</h2>
+                <p>Have questions? We have answers.</p>
+            </div>
+
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>How does the ATS score get calculated?</span>
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        The ATS score extracts technical terms, skills, acronyms, and key phrases from both your PDF resume and the job description, calculating the percentage of required terms present in your resume.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Is my resume data stored on your servers?</span>
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        No. Your resume is parsed entirely within your web browser using PDF.js. When requesting AI suggestions, relevant text excerpts are sent directly to Google Gemini's secure API.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Can I use my own Gemini API key?</span>
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        Yes! Expand the optional API key section under the analysis form to paste your custom Gemini API key from Google AI Studio.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 022 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <span>ATS Checker</span>
+                    </a>
+                    <p>AI-powered resume optimization to help job seekers pass ATS filters and land top tech interviews.</p>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="https://aistudio.google.com/apikey" target="_blank">Gemini API Key</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                &copy; 2026 ATS Checker. All rights reserved. Made with Google Gemini AI.
+            </div>
+        </div>
+    </footer>
+
+    <!-- PDF.js Library CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>
-        // Hard-coded API key - Replace with your actual key
-        const GEMINI_API_KEY = 'AIzaSyAd3tYiKjvG3oZ-ErRGssl8RDn1pgXu0fo';
-
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-        async function getAvailableModel(apiKey) {
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                const data = await response.json();
-                console.log('Available models:', data);
-
-                // Find first model that supports generateContent
-                const model = data.models?.find(m =>
-                    m.supportedGenerationMethods?.includes('generateContent') &&
-                    m.name.includes('gemini')
-                );
-
-                return model ? model.name : 'models/gemini-pro';
-            } catch (error) {
-                console.error('Error fetching models:', error);
-                return 'models/gemini-pro';
-            }
-        }
-
-        async function callGeminiAI(resumeText, jobDescription, score, missingKeywords, apiKey) {
-            const prompt = `You are an ATS (Applicant Tracking System) expert. Analyze this resume against the job description.
-
-RESUME:
-${resumeText.substring(0, 3000)}
-
-JOB DESCRIPTION:
-${jobDescription}
-
-CURRENT ATS SCORE: ${score.toFixed(1)}%
-TOP MISSING KEYWORDS: ${missingKeywords.slice(0, 15).map(k => k.keyword).join(', ')}
-
-Provide a detailed analysis with:
-1. Overall Assessment (2-3 sentences)
-2. Top 5 Specific Changes (be very specific with examples)
-3. How to incorporate missing keywords naturally
-4. Which resume sections need improvement
-
-Be concise, actionable, and professional.`;
-
-            try {
-                // Get available model
-                const modelName = await getAvailableModel(apiKey);
-                console.log('Using model:', modelName);
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
-
-                const data = await response.json();
-
-                console.log('API Response:', data); // Debug log
-
-                if (data.candidates && data.candidates[0]) {
-                    return data.candidates[0].content.parts[0].text;
-                } else if (data.error) {
-                    return `❌ API Error: ${data.error.message}. Check console for details.`;
-                } else {
-                    return "❌ Error: Invalid API key or API limit reached. Make sure you enabled the Generative Language API in Google Cloud Console.";
-                }
-            } catch (error) {
-                return `❌ Error calling AI: ${error.message}`;
-            }
-        }
-
-        function extractKeywords(text) {
-            const words = text.toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
-            const stopWords = new Set(['the', 'and', 'for', 'with', 'this', 'that', 'from', 'have', 'will', 'are', 'was', 'were', 'been', 'has', 'had', 'can', 'could', 'would', 'should', 'may', 'might', 'must', 'our', 'your', 'their', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once']);
-            return words.filter(w => !stopWords.has(w));
-        }
-
-        function analyzeResume(resumeText, jobDescription) {
-            const resumeKeywords = new Set(extractKeywords(resumeText));
-            const jdKeywords = extractKeywords(jobDescription);
-            const jdKeywordSet = new Set(jdKeywords);
-
-            const keywordCount = {};
-            jdKeywords.forEach(k => {
-                keywordCount[k] = (keywordCount[k] || 0) + 1;
-            });
-
-            const missing = Object.entries(keywordCount)
-                .filter(([k, v]) => !resumeKeywords.has(k))
-                .sort((a, b) => b[1] - a[1])
-                .map(([k, v]) => ({ keyword: k, count: v }));
-
-            const matched = [...resumeKeywords].filter(k => jdKeywordSet.has(k));
-            const score = jdKeywordSet.size > 0 ? (matched.length / jdKeywordSet.size) * 100 : 0;
-
-            return {
-                score: Math.min(score, 100),
-                totalKeywords: jdKeywordSet.size,
-                matchedKeywords: matched.length,
-                missingKeywords: missing
-            };
-        }
-
-        async function extractTextFromPDF(file) {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-            let text = '';
-
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const content = await page.getTextContent();
-                text += content.items.map(item => item.str).join(' ') + '\n';
-            }
-
-            return text;
-        }
-
-        document.getElementById('atsForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const fileInput = document.getElementById('resumeFile');
-            const jobDescription = document.getElementById('jobDescription').value;
-            const apiKey = GEMINI_API_KEY; // Use hard-coded API key
-            const button = e.target.querySelector('button');
-
-            button.textContent = 'Analyzing...';
-            button.disabled = true;
-
-            try {
-                const resumeText = await extractTextFromPDF(fileInput.files[0]);
-                const analysis = analyzeResume(resumeText, jobDescription);
-
-                // Display score
-                document.getElementById('score').textContent = analysis.score.toFixed(1) + '%';
-
-                let scoreMsg = '';
-                if (analysis.score >= 70) scoreMsg = '✅ Excellent Match!';
-                else if (analysis.score >= 50) scoreMsg = '⚡ Good - Needs Improvement';
-                else scoreMsg = '⚠️ Low Match - Action Required';
-                document.getElementById('scoreMessage').textContent = scoreMsg;
-
-                // Display stats
-                document.getElementById('totalKeywords').textContent = analysis.totalKeywords;
-                document.getElementById('matchedKeywords').textContent = analysis.matchedKeywords;
-                document.getElementById('missingKeywords').textContent = analysis.missingKeywords.length;
-
-                // Get AI suggestions
-                if (apiKey) {
-                    button.textContent = 'Getting AI Analysis...';
-                    const aiAnalysis = await callGeminiAI(resumeText, jobDescription, analysis.score, analysis.missingKeywords, apiKey);
-                    document.getElementById('aiSuggestions').textContent = aiAnalysis;
-                } else {
-                    document.getElementById('aiSuggestions').innerHTML = `
-                        <div style="color: #fbbf24;">⚠️ No API key provided</div>
-                        <div style="margin-top: 10px;">Add your Gemini API key above to get AI-powered suggestions on how to improve your resume.</div>
-                        <div style="margin-top: 10px;">Without AI, here's what you need to do:</div>
-                        <div style="margin-top: 10px;">• Add the missing keywords listed below to your resume<br>• Update your work experience with relevant technologies<br>• Add a professional summary with key skills<br>• Include relevant projects and certifications</div>
-                    `;
-                }
-
-                // Display suggested keywords
-                const suggestedKeywords = document.getElementById('suggestedKeywords');
-                const topMissing = analysis.missingKeywords.slice(0, 25);
-                suggestedKeywords.innerHTML = `
-                    <div style="color: #cbd5e1; margin-bottom: 15px;">Add these keywords to your resume (frequency in job description shown):</div>
-                    <div>${topMissing.map(m => `<span class="keyword-badge">${m.keyword}${m.count > 1 ? ' (' + m.count + 'x)' : ''}</span>`).join('')}</div>
-                `;
-
-                document.getElementById('result').style.display = 'block';
-                document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
-
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-
-            button.textContent = 'Analyze with AI';
-            button.disabled = false;
-        });
-    </script>
+    
+    <!-- Application Logic -->
+    <script src="script.js"></script>
 </body>
 
 </html>
