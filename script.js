@@ -2,8 +2,8 @@
 // AI-Powered ATS Resume Checker - Core Frontend Logic
 // ==========================================================================
 
-// Gemini API Key (Users can provide their key in the UI field)
-const GEMINI_API_KEY = '';
+// API endpoint — calls our Vercel serverless proxy (no API key in the browser)
+const GEMINI_PROXY_URL = '/api/gemini';
 
 // Configure PDF.js Worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -271,34 +271,8 @@ function analyzeResume(resumeText, jobDescription) {
     };
 }
 
-// --- Multi-Model Gemini API Fallback ---
-const MODELS_TO_TRY = [
-    'models/gemini-2.5-flash',
-    'models/gemini-2.0-flash',
-    'models/gemini-1.5-flash',
-    'models/gemini-pro'
-];
-
-async function tryGenerateWithModel(modelName, prompt, apiKey) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25000);
-
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            signal: controller.signal,
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
-        }
-    );
-    clearTimeout(timeoutId);
-    return await response.json();
-}
-
-async function callGeminiAI(resumeText, jobDescription, score, missingKeywords, apiKey) {
+// --- Gemini AI via Secure Server Proxy ---
+async function callGeminiAI(resumeText, jobDescription, score, missingKeywords) {
     const prompt = `You are an expert ATS Optimization Coach & Resume Strategist. Analyze this candidate's resume against the job description.
 
 RESUME TEXT:
@@ -319,35 +293,31 @@ Provide a comprehensive, professional analysis report containing:
 
 Format your response cleanly using bold headings and bullet points.`;
 
-    for (const modelName of MODELS_TO_TRY) {
-        try {
-            console.log('Trying model:', modelName);
-            const data = await tryGenerateWithModel(modelName, prompt, apiKey);
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-            if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-                return data.candidates[0].content.parts[0].text;
-            }
+        const response = await fetch(GEMINI_PROXY_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: controller.signal,
+            body: JSON.stringify({ prompt })
+        });
 
-            if (data.error && (data.error.message.includes('quota') || data.error.message.includes('429') || data.error.status === 'RESOURCE_EXHAUSTED')) {
-                console.warn(`Quota exhausted for ${modelName}, trying next...`);
-                continue;
-            }
+        clearTimeout(timeoutId);
+        const data = await response.json();
 
-            if (data.error) {
-                return `❌ API Error: ${data.error.message}`;
-            }
-        } catch (error) {
-            console.warn(`Error with ${modelName}:`, error.message);
-            continue;
+        if (response.ok && data.text) {
+            return data.text;
         }
+
+        return `❌ ${data.error || 'Unknown error from AI proxy.'}`;
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            return '⚠️ AI analysis timed out. Please try again.';
+        }
+        return `⚠️ Could not reach AI service: ${error.message}`;
     }
-
-    return `⚠️ AI quota limit reached for today on free models.
-
-🔄 Recommendations:
-• Use your custom Gemini API key above
-• Add missing keywords directly from the list below
-• Refresh your work experience bullet points with quantitative results`;
 }
 
 // --- Format AI Markdown Output ---
@@ -406,8 +376,7 @@ if (atsForm) {
 
         const fileInputEl = document.getElementById('resumeFile');
         const jobDescription = jobDescriptionInput.value.trim();
-        const overrideKey = document.getElementById('apiKeyOverride')?.value?.trim();
-        const apiKey = overrideKey || GEMINI_API_KEY;
+
 
         if (!fileInputEl.files[0]) {
             showError('Please upload a PDF resume file.');
@@ -482,15 +451,8 @@ if (atsForm) {
             // 4. Get Gemini AI Suggestions
             submitBtnText.textContent = 'Getting AI Analysis...';
             const aiSuggestionsEl = document.getElementById('aiSuggestionsContent');
-            if (apiKey) {
-                const aiRaw = await callGeminiAI(resumeText, jobDescription, matchScore, analysis.missingKeywords, apiKey);
-                aiSuggestionsEl.innerHTML = formatAIResponse(aiRaw);
-            } else {
-                aiSuggestionsEl.innerHTML = `
-                    <div style="color: var(--warning-yellow); margin-bottom: 12px; font-weight: 600;">⚠️ No Gemini API Key Configured</div>
-                    <div>Enter your custom Gemini API key above to unlock AI-powered recommendations.</div>
-                `;
-            }
+            const aiRaw = await callGeminiAI(resumeText, jobDescription, matchScore, analysis.missingKeywords);
+            aiSuggestionsEl.innerHTML = formatAIResponse(aiRaw);
 
             // Reveal Results Dashboard & Animate Gauge
             resultContainer.style.display = 'block';
