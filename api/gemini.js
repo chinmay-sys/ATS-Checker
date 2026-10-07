@@ -70,15 +70,19 @@ export default async function handler(req, res) {
                 });
             }
 
-            // Quota exhausted or model unavailable — try next model
+            // Quota exhausted, model unavailable, or overloaded — try next model
             if (data.error && (
                 data.error.message.includes('quota') ||
                 data.error.message.includes('429') ||
                 data.error.message.includes('no longer available') ||
                 data.error.message.includes('not found') ||
                 data.error.message.includes('is not supported') ||
+                data.error.message.includes('high demand') ||
+                data.error.message.includes('overloaded') ||
+                data.error.message.includes('temporarily') ||
                 data.error.status === 'RESOURCE_EXHAUSTED' ||
-                data.error.status === 'NOT_FOUND'
+                data.error.status === 'NOT_FOUND' ||
+                data.error.status === 'UNAVAILABLE'
             )) {
                 console.warn(`[Gemini Proxy] ${modelName} unavailable/exhausted, trying next...`);
                 continue;
