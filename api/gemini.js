@@ -5,10 +5,10 @@
 // ==========================================================================
 
 const MODELS_TO_TRY = [
-    'models/gemini-2.5-flash',
+    'models/gemini-3.8-flash',
+    'models/gemini-2.5-flash-lite',
     'models/gemini-2.0-flash',
-    'models/gemini-1.5-flash',
-    'models/gemini-pro'
+    'models/gemini-1.5-flash'
 ];
 
 export default async function handler(req, res) {
@@ -70,13 +70,17 @@ export default async function handler(req, res) {
                 });
             }
 
-            // Quota exhausted — try next model
+            // Quota exhausted or model unavailable — try next model
             if (data.error && (
                 data.error.message.includes('quota') ||
                 data.error.message.includes('429') ||
-                data.error.status === 'RESOURCE_EXHAUSTED'
+                data.error.message.includes('no longer available') ||
+                data.error.message.includes('not found') ||
+                data.error.message.includes('is not supported') ||
+                data.error.status === 'RESOURCE_EXHAUSTED' ||
+                data.error.status === 'NOT_FOUND'
             )) {
-                console.warn(`[Gemini Proxy] Quota exhausted for ${modelName}, trying next...`);
+                console.warn(`[Gemini Proxy] ${modelName} unavailable/exhausted, trying next...`);
                 continue;
             }
 
