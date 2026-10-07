@@ -279,7 +279,7 @@ RESUME TEXT:
 ${resumeText.substring(0, 3000)}
 
 JOB DESCRIPTION:
-${jobDescription}
+${jobDescription.substring(0, 3000)}
 
 CURRENT ATS MATCH SCORE: ${score.toFixed(1)}%
 TOP MISSING KEYWORDS: ${missingKeywords.slice(0, 15).map(k => k.keyword).join(', ')}
